@@ -3,6 +3,9 @@ import socket
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QFileDialog, QPushButton
 
 class FileServer:
+    port = 8080
+    address = 'localhost'
+    
     def __init__(self, directory, address, port):
         self.directory = directory
         self.address = address
@@ -21,7 +24,12 @@ class FileServer:
             client_socket, _ = server_socket.accept()
             client_socket.sendall(str(file_list).encode())
             client_socket.close()
-    @staticmethod
+
+    def start_server(self):
+        print(f"Server started at {self.address}:{self.port}")
+        file_list = self.get_file_list()
+        self.send_file_list(file_list)
+    
     def discover_servers():
         broadcast_address = '<broadcast>'
         broadcast_port = 8080

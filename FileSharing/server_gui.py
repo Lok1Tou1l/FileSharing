@@ -18,12 +18,14 @@ class FileSharingApp(QtWidgets.QApplication):
         self.layout.addWidget(self.file_dialog)
 
         # Create a button to trigger sending the file list
-        self.button = QtWidgets.QPushButton("Send File List")
+        self.button_send_file_list = QtWidgets.QPushButton("Send File List")
+        self.button_send_file_list.clicked.connect(self.send_file_list_clicked)
+        self.layout.addWidget(self.button_send_file_list)
 
-        # Connect the button click event to the handler function
-        self.button.clicked.connect(self.send_file_list_clicked)
-        # Add the button to the layout
-        self.layout.addWidget(self.button)
+        # Create a button to start the server
+        self.button_start_server = QtWidgets.QPushButton("Start Server")
+        self.button_start_server.clicked.connect(self.start_server)
+        self.layout.addWidget(self.button_start_server)
 
         # Set the layout for the main window
         self.window.setLayout(self.layout)
@@ -67,6 +69,10 @@ class FileSharingApp(QtWidgets.QApplication):
 
         # Send the file list to connected clients
         server.send_file_list(file_list)
+
+    def start_server(self):
+        # Start the server
+        server.start_server()
 
     def run(self):
         # Run the PyQt5 application
