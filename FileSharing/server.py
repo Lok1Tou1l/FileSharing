@@ -21,3 +21,22 @@ class FileServer:
             client_socket, _ = server_socket.accept()
             client_socket.sendall(str(file_list).encode())
             client_socket.close()
+    @staticmethod
+    def discover_servers():
+        broadcast_address = '<broadcast>'
+        broadcast_port = 8080
+
+        client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        client_socket.settimeout(5)
+
+        client_socket.sendto(b"DISCOVER", (broadcast_address, broadcast_port))
+
+        try:
+            while True:
+                data, server_address = client_socket.recvfrom(1024)
+                print(f"Discovered server at {server_address[0]}:{server_address[1]}")
+        except socket.timeout:
+            pass
+
+        client_socket.close()
