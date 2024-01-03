@@ -1,50 +1,39 @@
-import os
+import os 
 import socket
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QFileDialog, QPushButton
+import threading
+import time 
 
-class FileServer:
-    port = 8080
-    address = 'localhost'
+class server :
+    def __init__(self,host,port):
+        self.host = host 
+        self.port = port 
+        self.sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        self.sock.bind((self.host,self.port))
+
     
-    def __init__(self, directory, address, port):
-        self.directory = directory
-        self.address = address
-        self.port = port
-
-    def get_file_list(self):
-        file_list = os.listdir(self.directory)
-        return file_list
-
-    def send_file_list(self, file_list):
-        server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server_socket.bind((self.address, self.port))
-        server_socket.listen(5)
-
+    def start(self):
+        self.sock.listen(5)
+        print(f"Server listening on {self.host}:{self.port}")
         while True:
-            client_socket, _ = server_socket.accept()
-            client_socket.sendall(str(file_list).encode())
-            client_socket.close()
+            client, address = self.sock.accept()
+            print(f"New connection from {address[0]}:{address[1]}")
+            client_thread = threading.Thread(target=self.handle_client, args=(client,))
+            client_thread.start()
 
-    def start_server(self):
-        print(f"Server started at {self.address}:{self.port}")
-        file_list = self.get_file_list()
-        self.send_file_list(file_list)
+    def handle_client(self, client):
+        while True:
+            message = client.recv(1024).decode()
+            if message:
+                print(f"Received message from client: {message}")
+            else:
+                break
+
+
+if __name__ == "__main__":
+    server = server('192.168.1.39', 8000)
+    server.start()
     
-    def discover_servers():
-        broadcast_address = '<broadcast>'
-        broadcast_port = 8080
 
-        client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        client_socket.settimeout(5)
-
-        client_socket.sendto(b"DISCOVER", (broadcast_address, broadcast_port))
-
-        try:
-            while True:
-                data, server_address = client_socket.recvfrom(1024)
-                print(f"Discovered server at {server_address[0]}:{server_address[1]}")
-        except socket.timeout:
-            pass
-
-        client_socket.close()
+   
+    
+    
