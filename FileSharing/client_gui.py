@@ -8,7 +8,7 @@ class ClientThread(QThread):
 
     def __init__(self):
         QThread.__init__(self)
-        self.client = client('192.168.1.35', 8080)  # replace with your host and port
+        self.client = client('192.168.1.39', 8080)  # replace with your host and port
 
     def run(self):
         data = self.client.receive_data()
@@ -21,7 +21,7 @@ class ClientGUI(QWidget):
 
     def initUI(self):
         self.setGeometry(300, 300, 300, 200)
-        self.setWindowTitle('Client GUI')
+        self.setWindowTitle('Client')
 
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
@@ -37,6 +37,10 @@ class ClientGUI(QWidget):
         self.send_button.clicked.connect(self.send_data)
         self.layout.addWidget(self.send_button)
 
+        self.connect_button = QPushButton('Connect')
+        self.connect_button.clicked.connect(self.start_client)
+        self.layout.addWidget(self.connect_button)
+
     def send_data(self):
         data = self.input_line.text()
         self.client_thread.client.send_data(data)
@@ -48,11 +52,11 @@ class ClientGUI(QWidget):
         self.client_thread.start()
 
     def update_data(self, data):
+        client.receive_data(data)
         self.data_widget.append(data)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = ClientGUI()
-    ex.start_client()
     ex.show()
     sys.exit(app.exec_())

@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton
+from PyQt5.QtWidgets import *
 from PyQt5.QtCore import QThread
 from server import server
 import sys
@@ -27,9 +27,14 @@ class ServerGUI(QWidget):
         self.start_button.clicked.connect(self.start_server)
         self.layout.addWidget(self.start_button)
 
+        self.stop_button = QPushButton('Stop Server')
+        self.stop_button.clicked.connect(self.stop_server)
+        self.layout.addWidget(self.stop_button)
+    
     def start_server(self):
         self.server_thread = ServerThread()
         self.server_thread.start()
+    
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

@@ -26,10 +26,3 @@ class client:
         self.sock.sendall(data.encode())
         self.sock.close()
 
-
-if __name__ == "__main__":
-    client = client('192.168.1.39', 8000)
-    client.send_data("Hello from client")
-    print(client.receive_data())
-    client.receive_file("received_file.txt")
-    client.close_connection("exit")
