@@ -39,6 +39,10 @@ class ServerGUI(QWidget):
         self.stop_button = QPushButton('Stop Server')
         self.stop_button.clicked.connect(self.stop_server)
         self.layout.addWidget(self.stop_button)
+    
+        self.stop_button = QPushButton('Stop Server')
+        self.stop_button.clicked.connect(self.stop_server)
+        self.layout.addWidget(self.stop_button)
 
         self.send_button = QPushButton('Send')
         self.send_button.clicked.connect(self.send_data)
@@ -47,23 +51,6 @@ class ServerGUI(QWidget):
     def start_server(self):
         self.server_thread = ServerThread()
         self.server_thread.start()
-        if self.server_thread.isRunning():
-            self.data_widget.append(f"Server is running on adress {self.server_thread.server.host}:{self.server_thread.server.port}")
-        else:
-            self.data_widget.append("Server is not running")
-
-    def stop_server(self):
-        self.server_thread.server.stop()
-
-    def send_data(self):
-         data = self.input_line.text()
-         self.client_thread.server.send_data(data)
-         self.input_line.clear()
-
-    
-    def update_data(self, data):
-        server.receive_data(data)
-        self.data_widget.append(data)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
