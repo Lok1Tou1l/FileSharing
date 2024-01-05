@@ -26,7 +26,7 @@ class server:
             if message:
                 print(f"Received message from client: {message}")
                 if message == "send_file":
-                    self.send_file(client, "path/to/file.txt")  # Replace with the actual file path
+                    self.send_file(client, "C:/Users/Administrator/Documents/Projects/FileSharing/FileSharing/client_gui.txt")  # Replace with the actual file path
             else:
                 break
 
@@ -43,9 +43,7 @@ class server:
 
 
 
-if __name__ == "__main__":
-    server = server('192.168.1.39', 8000)
-    server.start()
+
     
 
    
