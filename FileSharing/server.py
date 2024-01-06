@@ -5,61 +5,41 @@ import threading
 class server:
     def __init__(self, host, port):
         self.host = host 
-        self.port = port 
+        self.port = port
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.bind((self.host, self.port))
         self.running = False
 
     def start(self):
-        self.sock.listen(5)
+        self.sock.listen(1)
         self.running = True
         while self.running:
-            client, adress = self.sock.accept() 
-            print(f"Client connected {adress[0]} port : {adress[1]}")
+            client,address = self.sock.accept() 
+            print(f"Client connected {address[0]} port: {address[1]}")
             client_thread = threading.Thread(target=self.handle_client, args=(client,))
             client_thread.start()
-
+        
     def handle_client(self, client):
-        while True:
-            message = client.recv(1024).decode()
-            if message:
-                print(f"Received message from client: {message}")
-                if message == "send":
-                    file_path = client.recv(1024).decode()
-                    self.send_file(client, file_path)
-                else:
-                    client.send(message.encode())
-            else:
-                break
-
-    def send_file(self, client, file_path):
-        if os.path.exists(file_path):
-            with open(file_path, "rb") as file:
-                data = file.read(1024)
-                while data:
+        while self.running:
+            try:
+                data = 'client connected'
+                if data:
+                    print(data.decode('utf-8'))
                     client.send(data)
-                    data = file.read(1024)
-            print("File sent successfully")
-        else:
-            print("File not found")
-    
+                else:
+                    raise print('Client disconnected')
+            except:
+                client.close()
+                return False
+        pass
 
-    
-    def send_data(self, data):
-        self.sock.send(data.encode())
+    def send_file_list(self, file_list):
+        file_list = str(os.listdir())
+        self.sock.sendall(file_list.encode())
 
     def stop(self):
         self.running = False
         self.sock.close()
     
-    def send_file_list(self):
-        file_list = os.listdir()
-        self.sock.send(str(file_list).encode())
-
-
-
-    
-
-   
-    
-    
+    def is_connected(self):
+        return self.running

@@ -11,12 +11,13 @@ class ClientThread(QThread):
         self.client = client('192.168.1.39', 8080)  # replace with your host and port
 
     def run(self):
-        data = self.client.receive_data()
-        self.signal.emit(data)
+        files = self.client.receive_file_list()
+        self.signal.emit(files)
 
 class ClientGUI(QWidget):
     def __init__(self):
         super().__init__()
+        self.client_thread = ClientThread() 
         self.initUI()
 
     def initUI(self):
@@ -30,12 +31,9 @@ class ClientGUI(QWidget):
         self.data_widget.setReadOnly(True)
         self.layout.addWidget(self.data_widget)
 
-        self.input_line = QLineEdit()
-        self.layout.addWidget(self.input_line)
-
-        self.send_button = QPushButton('Send Data')
-        self.send_button.clicked.connect(self.send_data)
-        self.layout.addWidget(self.send_button)
+        self.received_file_widget = QTextEdit()
+        self.received_file_widget.setReadOnly(True)
+        self.layout.addWidget(self.received_file_widget)
 
         self.connect_button = QPushButton('Connect')
         self.connect_button.clicked.connect(self.start_client)
@@ -47,13 +45,21 @@ class ClientGUI(QWidget):
         self.input_line.clear()
 
     def start_client(self):
+        message = 'Connected to: ' + self.client_thread.client.host + ':' + str(self.client_thread.client.port)
         self.client_thread = ClientThread()
-        self.client_thread.signal.connect(self.update_data)
+        self.client_thread.finished.connect(self.client_thread.deleteLater)
         self.client_thread.start()
-
+        self.data_widget.append(message)
+        self.client_thread.signal.connect(self.update_data)
+        
     def update_data(self, data):
-        client.receive_data(data)
-        self.data_widget.append(data)
+        if data is not None:
+            self.client_thread.client.receive_file_list(data)
+            self.data_widget.append(data)
+    
+    def receive_file_list(self, file_list):
+        self.client_thread.client.receive_file_list(file_list)
+        self.received_file_widget.append(file_list)
     
    
 
