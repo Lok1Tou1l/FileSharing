@@ -2,11 +2,15 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import QThread
 from server import server
 import sys
+import time 
+
+host = '192.168.136.93'
+port = 8080
 
 class ServerThread(QThread):
     def __init__(self):
         QThread.__init__(self)
-        self.server = server('192.168.1.39',8080)  # replace with your host and port
+        self.server = server(host,port)  # replace with your host and port
 
     def run(self):
         self.server.start()
@@ -40,17 +44,23 @@ class ServerGUI(QWidget):
         self.stop_button.clicked.connect(self.stop_server)
         self.layout.addWidget(self.stop_button)
     
-        self.stop_button = QPushButton('Stop Server')
-        self.stop_button.clicked.connect(self.stop_server)
-        self.layout.addWidget(self.stop_button)
-
         self.send_button = QPushButton('Send')
         self.send_button.clicked.connect(self.send_data)
         self.layout.addWidget(self.send_button)
 
     def start_server(self):
+        message = f"Sever started at {host}:{port}"
+        self.data_widget.append(message)
         self.server_thread = ServerThread()
         self.server_thread.start()
+    
+    def stop_server(self):
+        self.server_thread.server.stop()
+
+    def send_data(self):
+        data = self.input_line.text()
+        self.server_thread.server.send_data(data)
+        self.input_line.clear()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

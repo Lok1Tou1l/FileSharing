@@ -54,6 +54,8 @@ class ClientGUI(QWidget):
     def update_data(self, data):
         client.receive_data(data)
         self.data_widget.append(data)
+    
+   
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
