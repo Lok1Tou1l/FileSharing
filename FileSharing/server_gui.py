@@ -2,20 +2,20 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import QThread
 from server import server
 import sys
-import time 
+import os
 
-host = '192.168.136.93'
-port = 8080
 
 class ServerThread(QThread):
     def __init__(self):
         QThread.__init__(self)
-        self.server = server(host,port)  # replace with your host and port
+        self.server = server('192.168.136.93',8080)  # replace with your host and port
 
     def run(self):
         self.server.start()
 
 class ServerGUI(QWidget):
+    file_list = []
+
     def __init__(self):
         super().__init__()
         self.initUI()
@@ -27,6 +27,10 @@ class ServerGUI(QWidget):
 
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
+
+        self.file_list_widget = QListWidget()
+        self.layout.addWidget(self.file_list_widget)
+
 
         self.data_widget = QTextEdit()
         self.data_widget.setReadOnly(True)
@@ -44,11 +48,17 @@ class ServerGUI(QWidget):
         self.stop_button.clicked.connect(self.stop_server)
         self.layout.addWidget(self.stop_button)
     
-        self.send_button = QPushButton('Send')
-        self.send_button.clicked.connect(self.send_data)
-        self.layout.addWidget(self.send_button)
+        self.choose_file_button = QPushButton('Choose Path')
+        self.choose_file_button.clicked.connect(self.choose_directory)
+        self.layout.addWidget(self.choose_file_button)
+
+        self.send_file_list_button = QPushButton('Send File List')
+        self.send_file_list_button.clicked.connect(self.send_file_list)
+        self.layout.addWidget(self.send_file_list_button)
 
     def start_server(self):
+        host = self.input_line.text()
+        port = 8080
         message = f"Sever started at {host}:{port}"
         self.data_widget.append(message)
         self.server_thread = ServerThread()
@@ -57,10 +67,26 @@ class ServerGUI(QWidget):
     def stop_server(self):
         self.server_thread.server.stop()
 
-    def send_data(self):
-        data = self.input_line.text()
-        self.server_thread.server.send_data(data)
-        self.input_line.clear()
+    
+    def send_file_list(self, file_list):
+     # Convert the list of file paths to a string
+     file_list_str = '\n'.join(file_list)
+     # Send the string over the socket
+     self.server_thread.server.send_data(file_list_str)
+
+   
+    def choose_directory(self):
+     dir_path = QFileDialog.getExistingDirectory(self, 'Choose Directory')
+     if dir_path:
+         file_list = os.listdir(dir_path)
+         self.display_file_list(file_list)
+         return file_list
+    
+    def display_file_list(self, file_list):
+      self.file_list_widget.clear()
+      self.file_list_widget.addItems(file_list)
+   
+        
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

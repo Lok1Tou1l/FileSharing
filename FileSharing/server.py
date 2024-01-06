@@ -27,9 +27,6 @@ class server:
                 if message == "send":
                     file_path = client.recv(1024).decode()
                     self.send_file(client, file_path)
-                elif message == "receive_file":
-                    file_path = client.recv(1024).decode()
-                    self.receive_file(client, file_path)
                 else:
                     client.send(message.encode())
             else:
@@ -46,9 +43,7 @@ class server:
         else:
             print("File not found")
     
-    def receive_data(self):
-        received_data = self.sock.recv(1024).decode()
-        return received_data
+
     
     def send_data(self, data):
         self.sock.send(data.encode())
@@ -57,6 +52,9 @@ class server:
         self.running = False
         self.sock.close()
     
+    def send_file_list(self):
+        file_list = os.listdir()
+        self.sock.send(str(file_list).encode())
 
 
 
