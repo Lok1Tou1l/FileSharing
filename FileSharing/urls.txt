@@ -1,0 +1,4 @@
+http//loki.com:8080
+http//loki3.com:8080
+http//loki2.com:8080
+http//loki1.com:8080
