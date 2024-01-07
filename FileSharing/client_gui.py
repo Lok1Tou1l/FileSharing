@@ -39,10 +39,10 @@ class ClientGUI(QWidget):
         self.connect_button.clicked.connect(self.start_client)
         self.layout.addWidget(self.connect_button)
 
-    def send_data(self):
-        data = self.input_line.text()
-        self.client_thread.client.send_data(data)
-        self.input_line.clear()
+        self.receive_file_list_button = QPushButton('Receive File List')
+        self.receive_file_list_button.clicked.connect(self.receive_file_list)
+        self.layout.addWidget(self.receive_file_list_button)
+
 
     def start_client(self):
         message = 'Connected to: ' + self.client_thread.client.host + ':' + str(self.client_thread.client.port)
@@ -51,15 +51,15 @@ class ClientGUI(QWidget):
         self.client_thread.start()
         self.data_widget.append(message)
         self.client_thread.signal.connect(self.update_data)
+        if self.client_thread.isRunning():
+            self.connect_button.setEnabled(False)
         
-    def update_data(self, data):
-        if data is not None:
-            self.client_thread.client.receive_file_list(data)
-            self.data_widget.append(data)
     
     def receive_file_list(self, file_list):
         self.client_thread.client.receive_file_list(file_list)
-        self.received_file_widget.append(file_list)
+        file_list = self.receive_file_list(file_list)
+        file_list = str(file_list)
+        print("file list received")
     
    
 

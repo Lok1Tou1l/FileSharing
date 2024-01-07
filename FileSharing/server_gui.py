@@ -62,12 +62,13 @@ class ServerGUI(QWidget):
         self.server_thread.server.stop()
 
     
-    def send_file_list(self, file_list):
-       try:
-            file_list = os.listdir()
-            file_list
+    def send_file_list(self):
+        try:
+            file_list = [item.text() for item in self.file_list_widget.selectedItems()]
+            file_list = str(file_list)
             self.server_thread.server.send_file_list(file_list)
-       except OSError as e :
+            print(file_list)
+        except OSError as e:
             self.data_widget.append(f'Error: No client connected{e}')
      
 

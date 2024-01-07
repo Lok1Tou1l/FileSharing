@@ -26,11 +26,8 @@ class client:
         self.sock.sendall(data.encode())
         self.sock.close()
 
-    def receive_file_list(self):
-        data = self.sock.recv(1024)
-        return data.decode('utf-8')
+    def receive_file_list(self,file_list):
+        file_list = self.sock.recv(1024)
+        return file_list.decode('utf-8')
 
-    def receive_data(self,data): 
-        data = self.sock.recv(1024)
-        return data.decode('utf-8')
 
